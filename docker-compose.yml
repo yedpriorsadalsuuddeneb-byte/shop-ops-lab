@@ -1,0 +1,29 @@
+name: shop-ops-lab
+
+services:
+  db:
+    image: postgres:16
+    container_name: shop-db
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: shop_db
+    ports:
+      - "5440:5432"
+    volumes:
+      - shop_pgdata:/var/lib/postgresql/data
+      - ./db/seed.sql:/docker-entrypoint-initdb.d/seed.sql:ro
+
+  catalog-api:
+    build: ./api
+    image: shop-ops-lab-api:latest
+    container_name: catalog-api
+    profiles: ["api"]
+    ports:
+      - "8080:8080"
+    restart: always
+    mem_limit: 100m
+    memswap_limit: 100m
+
+volumes:
+  shop_pgdata:
+    name: shop_pgdata
